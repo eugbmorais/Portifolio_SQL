@@ -18,7 +18,7 @@ ORDER BY
     total_cases DESC;
 
 
-	-- Evolução dos Casos ao Longo do Tempo (Média de Novos Casos) 
+	-- EvoluÃ§Ã£o dos Casos ao Longo do Tempo (MÃ©dia de Novos Casos) 
 
 	SELECT 
     date,
@@ -34,7 +34,7 @@ ORDER BY
     date;
 
 
-  -- Pico de Casos e Mortes por País
+  -- Pico de Casos e Mortes por PaÃ­s
 
 	WITH RankedCases AS (
     SELECT 
@@ -61,7 +61,7 @@ ORDER BY
     new_cases DESC;
 
 
-	-- Taxa de Mortalidade por Milhão de Habitantes
+	-- Taxa de Mortalidade por MilhÃ£o de Habitantes
 
 	SELECT 
     location,
@@ -77,7 +77,7 @@ ORDER BY
     death_rate_per_million DESC;
 
 
-   -- Relação entre PIB e Taxa de Mortalidade
+   -- RelaÃ§Ã£o entre PIB e Taxa de Mortalidade
 
    SELECT 
     location,
@@ -94,7 +94,7 @@ ORDER BY
     gdp_per_capita DESC;
 
 
-	-- Efeito das Restrições (Stringency Index) na Taxa de Novos Casos
+	-- Efeito das RestriÃ§Ãµes (Stringency Index) na Taxa de Novos Casos
 
 	SELECT 
     location,
@@ -111,7 +111,7 @@ ORDER BY
     avg_stringency_index DESC, total_new_cases DESC;
 
 	
-	-- Países com a Maior Taxa de Mortalidade por Tamanho da População
+	-- PaÃ­ses com a Maior Taxa de Mortalidade por Tamanho da PopulaÃ§Ã£o
 
 	SELECT TOP 100
     location,
