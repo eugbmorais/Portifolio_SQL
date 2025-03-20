@@ -6,11 +6,10 @@ GO
 
 SELECT 
     continent,
-    SUM(total_cases) AS total_cases,
-    SUM(CAST(total_deaths AS FLOAT)) AS total_deaths
-
-FROM CovidDeaths
-    
+    SUM(TRY_CAST(total_cases AS FLOAT)) AS total_cases,
+    SUM(TRY_CAST(total_deaths AS FLOAT)) AS total_deaths
+FROM 
+    CovidDeaths
 WHERE 
     continent IS NOT NULL
 GROUP BY 
@@ -35,31 +34,31 @@ ORDER BY
     date;
 
 
+  -- Pico de Casos e Mortes por País
 
-	-- Pico de Casos e Mortes por País
-
-	SELECT 
-    c.location,
-    c.date,
-    c.new_cases,
-    c.new_deaths
-FROM 
-    CovidDeaths c
-JOIN (
+	WITH RankedCases AS (
     SELECT 
-        location, 
-        MAX(new_cases) AS max_new_cases
+        location,
+        date,
+        new_cases,
+        new_deaths,
+        ROW_NUMBER() OVER (PARTITION BY location ORDER BY TRY_CAST(new_cases AS FLOAT) DESC) AS rank
     FROM 
         CovidDeaths
     WHERE 
         continent IS NOT NULL
-    GROUP BY 
-        location
-) AS sub
-ON 
-    c.location = sub.location AND c.new_cases = sub.max_new_cases
+)
+SELECT 
+    location,
+    date,
+    new_cases,
+    new_deaths
+FROM 
+    RankedCases
+WHERE 
+    rank = 1
 ORDER BY 
-    c.new_cases DESC;
+    new_cases DESC;
 
 
 	-- Taxa de Mortalidade por Milhão de Habitantes
@@ -70,13 +69,14 @@ ORDER BY
 FROM 
     CovidDeaths
 WHERE 
-    total_deaths_per_million IS NOT NULL
+    continent IS NOT NULL 
+    AND total_deaths_per_million IS NOT NULL
 GROUP BY 
     location
 ORDER BY 
     death_rate_per_million DESC;
 
-   
+
    -- Relação entre PIB e Taxa de Mortalidade
 
    SELECT 
@@ -86,7 +86,8 @@ ORDER BY
 FROM 
     CovidDeaths
 WHERE 
-    gdp_per_capita IS NOT NULL
+    gdp_per_capita IS NOT NULL 
+    AND total_deaths_per_million IS NOT NULL
 GROUP BY 
     location, gdp_per_capita
 ORDER BY 
@@ -96,29 +97,18 @@ ORDER BY
 	-- Efeito das Restrições (Stringency Index) na Taxa de Novos Casos
 
 	SELECT 
-    date,
     location,
-    stringency_index,
-    new_cases
+    AVG(CAST(stringency_index AS FLOAT)) AS avg_stringency_index,
+    SUM(CAST(new_cases AS FLOAT)) AS total_new_cases
 FROM 
     CovidDeaths
 WHERE 
-    stringency_index IS NOT NULL
-ORDER BY 
-    stringency_index DESC, new_cases DESC;
-
-
-	SELECT 
-    location,
-    MAX(total_deaths_per_million) AS max_deaths_per_million
-FROM 
-    CovidDeaths
-WHERE 
-    continent IS NOT NULL
+    stringency_index IS NOT NULL 
+    AND ISNUMERIC(new_cases) = 1
 GROUP BY 
     location
 ORDER BY 
-    max_deaths_per_million DESC;
+    avg_stringency_index DESC, total_new_cases DESC;
 
 	
 	-- Países com a Maior Taxa de Mortalidade por Tamanho da População
@@ -136,3 +126,7 @@ GROUP BY
     location
 ORDER BY 
     mortality_rate_percent DESC;
+
+
+	
+	
