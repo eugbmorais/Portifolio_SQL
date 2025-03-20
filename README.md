@@ -11,4 +11,4 @@ Aqui você encontrará consultas e análises de dados que desenvolvi utilizando 
     - Total de casos e mortes por continente  
     - Pico de casos e mortes por país  
     - Efeito das restrições na taxa de novos casos  
-- 🔗 [Ver código](./Covid19_script.sql)  
+- 🔗 [Ver código](https://github.com/eugbmorais/Portifolio_SQL/blob/main/Covid19%20script.sql)  
